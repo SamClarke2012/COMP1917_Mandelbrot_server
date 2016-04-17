@@ -217,25 +217,19 @@ void serveBMP (int socket, double x, double y, int z) {
     //                       write RGBs from colorPixel
 
     int i, j, r, g, b, steps;
-    double scale = pow(2, z);
-    scale = 1.0/scale;
+    double scale = pow(2, -z);
     for(i = -256; i < 256; i++){
       for (j = -256; j < 256; j++){
-          steps = escapeSteps(i*scale, j*scale);
-          // printf("x=%d, y=%d, steps=%d, %lf\n", i ,j, steps, scale);
-          r = steps;//stepsToRed(steps);
-          g = steps;//stepsToGreen(steps);
-          b = steps;//stepsToBlue(steps);
+          steps = escapeSteps(j*scale, i*scale);
+          // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);
+          r = stepsToRed(steps);
+          g = stepsToGreen(steps);
+          b = stepsToBlue(steps);
           write(socket, &b, sizeof(uint8_t));
           write(socket, &g, sizeof(uint8_t));
           write(socket, &r, sizeof(uint8_t));
       }
     }
-    // unsigned int i;
-    // unsigned char white = 255;
-    // for(i=0; i<(512*512*3); i++){
-    //     write(socket, &white, 1);
-    // }
 }
 
 
