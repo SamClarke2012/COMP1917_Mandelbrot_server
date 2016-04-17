@@ -222,9 +222,9 @@ void serveBMP (int socket, double x, double y, int z) {
       for (j = -256; j < 256; j++){
           steps = escapeSteps(j*scale, i*scale);
           // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);
-          r = stepsToRed(steps);
-          g = stepsToGreen(steps);
-          b = stepsToBlue(steps);
+          r = steps;//stepsToRed(steps);
+          g = steps;//stepsToGreen(steps);
+          b = steps;//stepsToBlue(steps);
           write(socket, &b, sizeof(uint8_t));
           write(socket, &g, sizeof(uint8_t));
           write(socket, &r, sizeof(uint8_t));
