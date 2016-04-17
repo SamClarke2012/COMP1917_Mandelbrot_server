@@ -220,7 +220,7 @@ void serveBMP (int socket, double x, double y, int z) {
     double scale = pow(2, -z);
     for(i = -256; i < 256; i++){
       for (j = -256; j < 256; j++){
-          steps = escapeSteps(j*scale, i*scale);
+          steps = escapeSteps(y+j*scale, x+i*scale);
           // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);
           r = steps;//stepsToRed(steps);
           g = steps;//stepsToGreen(steps);
