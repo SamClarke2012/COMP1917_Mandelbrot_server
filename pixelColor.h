@@ -12,8 +12,8 @@
 #define COL_COS_BIAS   128
 #define COL_COS_AMPLITUDE (-128)
 
-unsigned char stepsToRed (int steps);
-unsigned char stepsToBlue (int steps);
-unsigned char stepsToGreen (int steps);
+static unsigned char stepsToRed (int steps);
+static unsigned char stepsToBlue (int steps);
+static unsigned char stepsToGreen (int steps);
 
 #endif

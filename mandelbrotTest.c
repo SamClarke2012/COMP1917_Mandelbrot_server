@@ -17,14 +17,14 @@ int main (int argc, char *argv[]) {
    return EXIT_SUCCESS;
 }
 
-double distanceFromOrigin( complexNumber point ) {
+static double distanceFromOrigin( complexNumber point ) {
    // Length of position vector from origin to point [OP].
    double rSquared = point.real * point.real;
    double iSquared = point.imaginary * point.imaginary;
    return sqrt(rSquared + iSquared);
 }
 
-int escapeSteps( double x, double y ){
+static int escapeSteps( double x, double y ){
    // Complex numbers
    complexNumber constant;
    constant.real      = x;
@@ -47,7 +47,7 @@ int escapeSteps( double x, double y ){
    return iterations;
 }
 
-complexNumber multiplyComplex( complexNumber a, complexNumber b ) {
+static complexNumber multiplyComplex( complexNumber a, complexNumber b ) {
    complexNumber result;
    // ab+ab(i^2) - Simplified expansion on real part of (a+ai)(b+bi)
    result.real = (a.real * b.real) + (a.imaginary * b.imaginary * -1); 
@@ -57,7 +57,7 @@ complexNumber multiplyComplex( complexNumber a, complexNumber b ) {
    return result;
 }
 
-complexNumber addComplex( complexNumber a, complexNumber b ) {
+static complexNumber addComplex( complexNumber a, complexNumber b ) {
    complexNumber result;
    // Add real components
    result.real = a.real + b.real;
