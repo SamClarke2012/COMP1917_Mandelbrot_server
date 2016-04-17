@@ -6,6 +6,31 @@
  *  Containing code created by Richard Buckland on 28/01/11.
  *  Copyright 2012 Licensed under Creative Commons SA-BY-NC 3.0. 
  *
+https://almondbread.cse.unsw.edu.au/tile_x-1.0_y-0.2_z9.bmp
+
+strstr a pointer to 'x', strstr a pointer to '_', strtof the number out
+strstr a pointer to 'y', strstr a pointer to '_', strtof the number out
+strstr a pointer to 'z', strstr a pointer to '.', strtod the number out
+
+e.g
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+int main( int argc, char** argv){
+    char *s = "asd1.0gh";
+    // cut out float 1.0
+    char *b = strstr(s, "d");
+    char *e = strstr(s, "g");
+    printf("start pointer: %s\n", b);
+    printf("end pointer: %s\n", e);
+    float r = strtof(b+1, &e);
+    printf("%f\n", r);
+    return 0;
+}
+
+
  */
 
 #include <stdlib.h>
