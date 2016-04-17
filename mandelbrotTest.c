@@ -35,8 +35,8 @@ int escapeSteps( double x, double y ){
    // Iteration counter
    unsigned int iterations = 0;
    // Until we get far enough away
-   while( (distanceFromOrigin(result) < TARGET_DISTANCE ) && 
-          (iterations < MAX_ESCAPE_ITERATIONS) ) {
+   while( (distanceFromOrigin(result) < TARGET_DISTANCE) && 
+                    (iterations < MAX_ESCAPE_ITERATIONS) ) {
       // Square resulting complex number
       result = multiplyComplex( result, result );
       // Add complex constant
