@@ -17,7 +17,7 @@ typedef struct ComplexNumber {
 static complexNumber multiplyComplex( complexNumber a, complexNumber b );
 static complexNumber addComplex( complexNumber a, complexNumber b );
 static double distanceFromOrigin( complexNumber point );
-static int escapeSteps (double x, double y);
+int escapeSteps (double x, double y);
 static void testEscapeSteps(void);
 
 #endif

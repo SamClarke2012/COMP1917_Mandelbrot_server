@@ -39,6 +39,9 @@ int main( int argc, char** argv){
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
+#include <math.h>
+#include "mandelbrot.c"
+#include "pixelColor.c"
 
 #define TRUE  1 
 #define FALSE 0
@@ -64,16 +67,16 @@ int main( int argc, char** argv){
 // after serving this many pages the server will halt
 
 
-int parseRequest( char *request, float *x, float *y, int *z );
+int parseRequest( char *request, double *x, double *y, int *z );
 int waitForConnection (int serverSocket);
 int makeServerSocket (int portno);
 void writeHeader ( int socket );
-void serveBMP (int socket, float x, float y, int z);
+void serveBMP (int socket, double x, double y, int z);
 
 
 int main (int argc, char *argv[]) {
    int z;
-   float x, y;
+   double x, y;
    printf ("************************************\n");
    printf ("Starting simple server %f\n", SIMPLE_SERVER_VERSION);
    printf ("Serving bmps since 2012\n");   
@@ -183,37 +186,56 @@ int waitForConnection (int serverSocket) {
    return (connectionSocket);
 }
 
-int parseRequest( char *request, float *x, float *y, int *z ){
+int parseRequest( char *request, double *x, double *y, int *z ){
   //GET /tile_x-1.0_y-0.2_z9.bmp HTTP/1.1
   // int rz;
   // float rx, ry;
-  int r = sscanf(request, "GET /tile_x%e_y%e_z%d.bmp", x, y, z);
+  int r = sscanf(request, "GET /tile_x%lf_y%lf_z%d.bmp", x, y, z);
   printf("requested x:%f y:%f z:%d\n\n%d\n",*x,*y,*z, r );
 }
 
-void serveBMP (int socket, float x, float y, int z) {
-   char* message;
-   
-   // first send the http response header
-   
-   // (if you write stings one after another like this on separate
-   // lines the c compiler kindly joins them togther for you into
-   // one long string)
-   message = "HTTP/1.0 200 OK\r\n"
+void serveBMP (int socket, double x, double y, int z) {
+    char* message;
+
+    // first send the http response header
+
+    // (if you write stings one after another like this on separate
+    // lines the c compiler kindly joins them togther for you into
+    // one long string)
+    message = "HTTP/1.0 200 OK\r\n"
                 "Content-Type: image/bmp\r\n"
                 "\r\n";
-   // printf ("about to send=> %s\n", message);
-   write (socket, message, strlen (message));
-   
-   // now send the BMP
-   unsigned char bmp[NUM_PIXELS*BYTES_PER_PIXEL] = {255};
+    // printf ("about to send=> %s\n", message);
+    write (socket, message, strlen (message));
 
-   writeHeader(socket);
-  unsigned int i;
-  unsigned char white = 255;
-  for(i=0; i<(512*512*3); i++){
-      write(socket, &white, 1);
-  }
+    writeHeader(socket);
+
+    // Set scale, iterate through i = x: -256 to 256
+    //                            j = y: -256 to 256
+    //                        scale = 1/(2^zoom)
+    //                       escape = i*scale, j*scale
+    //                       write RGBs from colorPixel
+
+    int i, j, r, g, b, steps;
+    double scale = pow(2, z);
+    scale = 1.0/scale;
+    for(i = -256; i < 256; i++){
+      for (j = -256; j < 256; j++){
+          steps = escapeSteps(i*scale, j*scale);
+          // printf("x=%d, y=%d, steps=%d, %lf\n", i ,j, steps, scale);
+          r = steps;//stepsToRed(steps);
+          g = steps;//stepsToGreen(steps);
+          b = steps;//stepsToBlue(steps);
+          write(socket, &b, sizeof(uint8_t));
+          write(socket, &g, sizeof(uint8_t));
+          write(socket, &r, sizeof(uint8_t));
+      }
+    }
+    // unsigned int i;
+    // unsigned char white = 255;
+    // for(i=0; i<(512*512*3); i++){
+    //     write(socket, &white, 1);
+    // }
 }
 
 
