@@ -55,55 +55,54 @@ int waitForConnection (int serverSocket);
 int makeServerSocket (int portno);
 void writeHeader ( int socket );
 void serveBMP (int socket, double x, double y, int z);
+void serveJS( int socket );
 
 
 int main (int argc, char *argv[]) {
-   int z;
-   double x, y;
-   printf ("************************************\n");
-   printf ("Starting simple server %f\n", SIMPLE_SERVER_VERSION);
-   printf ("Serving bmps since 2012\n");   
-   
-   int serverSocket = makeServerSocket (DEFAULT_PORT);   
-   printf ("Access this server at http://localhost:%d/\n", DEFAULT_PORT);
-   printf ("************************************\n");
-   
-   char request[REQUEST_BUFFER_SIZE];
-   
-   int numberServed = 0;
-   while (numberServed < NUMBER_OF_PAGES_TO_SERVE) {
-      
-      printf ("*** So far served %d pages ***\n", numberServed);
-      
+    int z;
+    double x, y;
+    printf ("************************************\n");
+    printf ("Starting simple server %f\n", SIMPLE_SERVER_VERSION);
+    printf ("Serving bmps since 2012\n");   
+
+    int serverSocket = makeServerSocket (DEFAULT_PORT);   
+    printf ("Access this server at http://localhost:%d/\n", DEFAULT_PORT);
+    printf ("************************************\n");
+
+    char request[REQUEST_BUFFER_SIZE];
+
+    int numberServed = 0;
+    while (numberServed < NUMBER_OF_PAGES_TO_SERVE) {
+            
       int connectionSocket = waitForConnection (serverSocket);
       // wait for a request to be sent from a web browser, open a new
       // connection for this conversation
-      
-      // read the first line of the request sent by the browser  
       int bytesRead;
-      bytesRead = read (connectionSocket, request, (sizeof request)-1);
+      bytesRead = read ( connectionSocket, request, sizeof(request)-1 );
+      // Assert we read some bytes
       assert (bytesRead >= 0); 
-      // were we able to read any data from the connection?
-            
-      // print entire request to the console 
-      // printf (" *** Received http request ***\n %s\n", request);
-      parseRequest( request, &x, &y, &z );
-      
-      //send the browser a simple html page using http
-      // printf (" *** Sending http response ***\n");
-      serveBMP(connectionSocket, x, y, z);
-      
-      // close the connection after sending the page- keep aust beautiful
-      close(connectionSocket);
-      
-      numberServed++;
-   } 
-   
-   // close the server connection after we are done- keep aust beautiful
-   // printf ("** shutting down the server **\n");
-   close (serverSocket);
-   
-   return EXIT_SUCCESS; 
+      int count = parseRequest( request, &x, &y, &z );
+      if( count == 3 ) {
+          // Serve BMPs to correctly formatted URL
+          serveBMP( connectionSocket, x, y, z );
+          numberServed++;
+      } else {
+          // Serve JS to root directory
+          char rootCheck;
+          sscanf(request, "GET /%cHTTP", &rootCheck);
+          if( rootCheck == ' ' ){
+              serveJS( connectionSocket );
+              numberServed++;
+          }
+      }
+      close( connectionSocket );
+    } 
+
+    // close the server connection after we are done- keep aust beautiful
+    // printf ("** shutting down the server **\n");
+    close (serverSocket);
+
+    return EXIT_SUCCESS; 
 }
 
 // start the server listening on the specified port number
@@ -170,41 +169,50 @@ int waitForConnection (int serverSocket) {
 }
 
 int parseRequest( char *request, double *x, double *y, int *z ){
-  //GET /tile_x-1.0_y-0.2_z9.bmp HTTP/1.1
-  // int rz;
-  // float rx, ry;
-  int r = sscanf(request, "GET /tile_x%lf_y%lf_z%d.bmp", x, y, z);
-  printf("requested x:%f y:%f z:%d\n\n%d\n",*x,*y,*z, r );
+  // Remove information using a format string
+  int count = sscanf(request, "GET /tile_x%lf_y%lf_z%d.bmp", x, y, z);
+  // Return number of items found
+  return count;
 }
 
-void serveBMP (int socket, double x, double y, int z) {
-    char* message;
-
-    // first send the http response header
-
-    // (if you write stings one after another like this on separate
-    // lines the c compiler kindly joins them togther for you into
-    // one long string)
+void serveJS( int socket ){
+    char *message;
     message = "HTTP/1.0 200 OK\r\n"
-                "Content-Type: image/bmp\r\n"
-                "\r\n";
+              "Content-Type: text/html\r\n"
+              "\r\n"
+              "<!DOCTYPE html>\r\n"
+              "<script src=\"http://almondbread.cse.unsw.edu.au/tiles.js\"></script>"
+              "</html>";
     // printf ("about to send=> %s\n", message);
-    write (socket, message, strlen (message));
+    write( socket, message, strlen (message) );
+}
 
+void serveBMP ( int socket, double x, double y, int z ) {
+    char* message;
+    // HTTP response header
+    message = "HTTP/1.0 200 OK\r\n"
+              "Content-Type: image/bmp\r\n"
+              "\r\n";
+    // Send HTTP response header
+    write( socket, message, strlen (message) );
+    // Followed by BMP header
     writeHeader(socket);
-
+    // through x,y (i,j)
     int i, j, r, g, b, steps;
-    double scale = pow(2, -z);
-    for(i = -256; i < 256; i++){  // this is escapeSteps to RGB
-      for (j = -256; j < 256; j++){
-          steps = escapeSteps(y+j*scale, x+i*scale);
-          // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);
-          r = stepsToRed(steps);
-          g = stepsToGreen(steps);
-          b = stepsToBlue(steps);
-          write(socket, &b, sizeof(uint8_t));
-          write(socket, &g, sizeof(uint8_t));
-          write(socket, &r, sizeof(uint8_t));
+    // scale = 2^(-zoom)
+    double scale = pow( 2, -z );
+    for( i = -256; i < 256; i++ ){
+      for ( j = -256; j < 256; j++ ){
+          // Get escape steps for that scaled point
+          steps = escapeSteps( y+j*scale, x+i*scale );
+          // Get RGB values for steps
+          r = stepsToRed( steps );
+          g = stepsToGreen( steps );
+          b = stepsToBlue( steps );
+          // Write BGR pixels to socket
+          write( socket, &b, sizeof( uint8_t ) );
+          write( socket, &g, sizeof( uint8_t ) );
+          write( socket, &r, sizeof( uint8_t ) );
       }
     }
 }
