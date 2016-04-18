@@ -181,9 +181,8 @@ void serveJS( int socket ){
               "Content-Type: text/html\r\n"
               "\r\n"
               "<!DOCTYPE html>\r\n"
-              "<script src=\"http://almondbread.cse.unsw.edu.au/tiles.js\"></script>"
-              "</html>";
-    // printf ("about to send=> %s\n", message);
+              "<script src=\"http://almondbread.cse.unsw.edu.au/tiles.js\"></script>\r\n"
+              "</html>\r\n";
     write( socket, message, strlen (message) );
 }
 
