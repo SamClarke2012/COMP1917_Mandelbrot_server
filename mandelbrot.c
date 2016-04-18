@@ -11,25 +11,27 @@
 #include "mandelbrot.h"
 
 
-// int main (int argc, char *argv[]) {
-//    testEscapeSteps();
-//    printf ("All tests passed.  You are Awesome!\n\n");
-//    return EXIT_SUCCESS;
-// }
+/* ONLY HERE BECAUSE I'M NOT ALOWED TO CHANGE THE .H FILE */
+#define TARGET_DISTANCE 2
+#define MAX_ESCAPE_ITERATIONS 256
 
-static double distanceFromOrigin( complexNumber point ) {
-   // Length of position vector from origin to point [OP].
-   double rSquared = point.real * point.real;
-   double iSquared = point.imaginary * point.imaginary;
-   return sqrt(rSquared + iSquared);
-}
+typedef struct ComplexNumber {
+   double real;
+   double imaginary;
+} complexNumber;
+
+static complexNumber multiplyComplex( complexNumber a, complexNumber b );
+static complexNumber addComplex( complexNumber a, complexNumber b );
+static double distanceFromOrigin( complexNumber point );
+/* ONLY HERE BECAUSE I'M NOT ALOWED TO CHANGE THE .H FILE */
+
 
 int escapeSteps( double x, double y ){
    // Complex numbers
    complexNumber constant;
    constant.real      = x;
    constant.imaginary = y;
-   complexNumber result;
+   complexNumber result; // this is escape steps
    result.real        = 0;
    result.imaginary   = 0;
    // Iteration counter
@@ -67,7 +69,13 @@ static complexNumber addComplex( complexNumber a, complexNumber b ) {
    return result;
 }
 
-
+static double distanceFromOrigin( complexNumber point ) {
+   // Length of position vector OP.
+   double rSquared = point.real * point.real;
+   double iSquared = point.imaginary * point.imaginary;
+   // return |OP|
+   return sqrt(rSquared + iSquared);
+}
 
 /************ Built in unit tests ***************/
 

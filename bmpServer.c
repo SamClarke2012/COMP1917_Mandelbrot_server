@@ -6,29 +6,12 @@
  *  Containing code created by Richard Buckland on 28/01/11.
  *  Copyright 2012 Licensed under Creative Commons SA-BY-NC 3.0. 
  *
-https://almondbread.cse.unsw.edu.au/tile_x-1.0_y-0.2_z9.bmp
+TODO:
+  handle bad requests               - close socket etc
+  handle request /                  - serve js
+  handle request /tileXXXXXXXX.bmp  - serve BMP
 
-strstr a pointer to 'x', strstr a pointer to '_', strtof the number out
-strstr a pointer to 'y', strstr a pointer to '_', strtof the number out
-strstr a pointer to 'z', strstr a pointer to '.', strtod the number out
 
-e.g
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-int main( int argc, char** argv){
-    char *s = "asd1.0gh";
-    // cut out float 1.0
-    char *b = strstr(s, "d");
-    char *e = strstr(s, "g");
-    printf("start pointer: %s\n", b);
-    printf("end pointer: %s\n", e);
-    float r = strtof(b+1, &e);
-    printf("%f\n", r);
-    return 0;
-}
 
 
  */
@@ -40,8 +23,8 @@ int main( int argc, char** argv){
 #include <assert.h>
 #include <unistd.h>
 #include <math.h>
-#include "mandelbrot.c"
-#include "pixelColor.c"
+#include "mandelbrot.h"
+#include "pixelColor.h"
 
 #define TRUE  1 
 #define FALSE 0
@@ -210,15 +193,9 @@ void serveBMP (int socket, double x, double y, int z) {
 
     writeHeader(socket);
 
-    // Set scale, iterate through i = x: -256 to 256
-    //                            j = y: -256 to 256
-    //                        scale = 1/(2^zoom)
-    //                       escape = i*scale, j*scale
-    //                       write RGBs from colorPixel
-
     int i, j, r, g, b, steps;
     double scale = pow(2, -z);
-    for(i = -256; i < 256; i++){
+    for(i = -256; i < 256; i++){  // this is escapeSteps to RGB
       for (j = -256; j < 256; j++){
           steps = escapeSteps(y+j*scale, x+i*scale);
           // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);

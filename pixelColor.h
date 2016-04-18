@@ -6,14 +6,8 @@
 #ifndef PIXELCOLOR_H
 #define PIXELCOLOR_H
 
-#define RED_COS_PERIOD 81
-#define BLU_COS_PERIOD 60
-#define GRN_COS_PERIOD 40
-#define COL_COS_BIAS   128
-#define COL_COS_AMPLITUDE (-128)
-
-static unsigned char stepsToRed (int steps);
-static unsigned char stepsToBlue (int steps);
-static unsigned char stepsToGreen (int steps);
+unsigned char stepsToRed (int steps);
+unsigned char stepsToBlue (int steps);
+unsigned char stepsToGreen (int steps);
 
 #endif
