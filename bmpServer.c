@@ -63,7 +63,7 @@ int main( int argc, char** argv){
 #define SIMPLE_SERVER_VERSION 1.0
 #define REQUEST_BUFFER_SIZE 1000
 #define DEFAULT_PORT 1917
-#define NUMBER_OF_PAGES_TO_SERVE 10
+#define NUMBER_OF_PAGES_TO_SERVE 1000
 // after serving this many pages the server will halt
 
 
@@ -222,9 +222,9 @@ void serveBMP (int socket, double x, double y, int z) {
       for (j = -256; j < 256; j++){
           steps = escapeSteps(y+j*scale, x+i*scale);
           // printf("x=%d, y=%d, z=%d, steps=%d, %lf\n", i ,j, z, steps, scale);
-          r = steps;//stepsToRed(steps);
-          g = steps;//stepsToGreen(steps);
-          b = steps;//stepsToBlue(steps);
+          r = stepsToRed(steps);
+          g = stepsToGreen(steps);
+          b = stepsToBlue(steps);
           write(socket, &b, sizeof(uint8_t));
           write(socket, &g, sizeof(uint8_t));
           write(socket, &r, sizeof(uint8_t));
