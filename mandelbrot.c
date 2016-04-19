@@ -2,8 +2,6 @@
 // Wed13-Sitar
 // 16/04/2016
 // Mandelbrot functions.
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -20,9 +18,9 @@ typedef struct ComplexNumber {
    double imaginary;
 } complexNumber;
 
-static complexNumber multiplyComplex( complexNumber a, complexNumber b );
-static complexNumber addComplex( complexNumber a, complexNumber b );
 static double distanceFromOrigin( complexNumber point );
+static complexNumber addComplex( complexNumber a, complexNumber b );
+static complexNumber multiplyComplex( complexNumber a, complexNumber b );
 /* ONLY HERE BECAUSE I'M NOT ALOWED TO CHANGE THE .H FILES */
 
 
@@ -33,7 +31,7 @@ int escapeSteps( double x, double y ){
    complexNumber constant;
    constant.real      = x;
    constant.imaginary = y;
-   complexNumber result; // this is escape steps
+   complexNumber result; 
    result.real        = 0;
    result.imaginary   = 0;
    // Iteration counter
@@ -51,6 +49,7 @@ int escapeSteps( double x, double y ){
    return iterations;
 }
 
+
 static complexNumber multiplyComplex( complexNumber a, complexNumber b ) {
    complexNumber result;
    // ab+ab(i^2) - Simplified expansion on real part of (a+ai)(b+bi)
@@ -61,6 +60,7 @@ static complexNumber multiplyComplex( complexNumber a, complexNumber b ) {
    return result;
 }
 
+
 static complexNumber addComplex( complexNumber a, complexNumber b ) {
    complexNumber result;
    // Add real components
@@ -70,6 +70,7 @@ static complexNumber addComplex( complexNumber a, complexNumber b ) {
    // Return new complex number
    return result;
 }
+
 
 static double distanceFromOrigin( complexNumber point ) {
    // Length of position vector OP.
