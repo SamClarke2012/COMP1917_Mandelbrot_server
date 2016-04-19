@@ -7,6 +7,5 @@
 #define MANDELBROT_H
 
 int escapeSteps (double x, double y);
-// static void testEscapeSteps(void);
 
 #endif

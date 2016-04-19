@@ -200,10 +200,10 @@ void serveBMP ( int socket, double x, double y, int z ) {
     int i, j, r, g, b, steps;
     // scale = 2^(-zoom)
     double scale = pow( 2, -z );
-    for( i = -256; i < 256; i++ ){
-      for ( j = -256; j < 256; j++ ){
+    for( j = -256; j < 256; j++ ){
+      for ( i = -256; i < 256; i++ ){
           // Get escape steps for that scaled point
-          steps = escapeSteps( y+j*scale, x+i*scale );
+          steps = escapeSteps( x+i*scale, y+j*scale );
           // Get RGB values for steps
           r = stepsToRed( steps );
           g = stepsToGreen( steps );
